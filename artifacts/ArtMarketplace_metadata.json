@@ -1,0 +1,946 @@
+{
+	"compiler": {
+		"version": "0.8.34+commit.80d5c536"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "nftAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "initialMintPrice",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "required",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "sent",
+						"type": "uint256"
+					}
+				],
+				"name": "InsufficientPayment",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "ListingNotActive",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "MarketplaceNotApproved",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "required",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "sent",
+						"type": "uint256"
+					}
+				],
+				"name": "MintPriceNotMet",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NoFeesToWithdraw",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NotTokenOwner",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					}
+				],
+				"name": "OwnableInvalidOwner",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "OwnableUnauthorizedAccount",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "PriceMustBeGreaterThanZero",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "ReentrancyGuardReentrantCall",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "TransferFailed",
+				"type": "error"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "FeesWithdrawn",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "seller",
+						"type": "address"
+					}
+				],
+				"name": "ListingCancelled",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "oldPrice",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "newPrice",
+						"type": "uint256"
+					}
+				],
+				"name": "MintPriceUpdated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "creator",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "uri",
+						"type": "string"
+					}
+				],
+				"name": "NFTCreated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "seller",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "price",
+						"type": "uint256"
+					}
+				],
+				"name": "NFTListed",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "seller",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "buyer",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "price",
+						"type": "uint256"
+					}
+				],
+				"name": "NFTSold",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "previousOwner",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "OwnershipTransferred",
+				"type": "event"
+			},
+			{
+				"inputs": [],
+				"name": "FEE_BASIS_POINTS",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "accumulatedFees",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "buyNFT",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "salePrice",
+						"type": "uint256"
+					}
+				],
+				"name": "calculateFee",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "cancelListing",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "uri",
+						"type": "string"
+					}
+				],
+				"name": "createNFT",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "getListing",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "seller",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "price",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "active",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "price",
+						"type": "uint256"
+					}
+				],
+				"name": "listNFT",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "listings",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "seller",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "price",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "active",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "mintPrice",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "nftContract",
+				"outputs": [
+					{
+						"internalType": "contract ArtNFT",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "renounceOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "newPrice",
+						"type": "uint256"
+					}
+				],
+				"name": "setMintPrice",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "transferOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "withdrawFees",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"author": "ArtChain Team — ISI UTN 2026",
+			"details": "Llama a ArtNFT.mint() (cross-contract). Patrón CEI y ReentrancyGuard      en todas las funciones que manejan ETH para prevenir reentrancy.",
+			"errors": {
+				"OwnableInvalidOwner(address)": [
+					{
+						"details": "The owner is not a valid owner account. (eg. `address(0)`)"
+					}
+				],
+				"OwnableUnauthorizedAccount(address)": [
+					{
+						"details": "The caller account is not authorized to perform an operation."
+					}
+				],
+				"ReentrancyGuardReentrantCall()": [
+					{
+						"details": "Unauthorized reentrant call."
+					}
+				]
+			},
+			"kind": "dev",
+			"methods": {
+				"buyNFT(uint256)": {
+					"details": "Patrón CEI:      1. CHECKS: listing activo, pago suficiente      2. EFFECTS: desactivar listing, calcular y acumular fee      3. INTERACTIONS: transferir NFT, pagar al vendedor, devolver excedente      El 2.5% de comisión queda retenido en el contrato para el owner.",
+					"params": {
+						"tokenId": "ID del NFT a comprar."
+					}
+				},
+				"calculateFee(uint256)": {
+					"params": {
+						"salePrice": "Precio de venta en wei."
+					},
+					"returns": {
+						"_0": "El monto del fee (2.5% del precio)."
+					}
+				},
+				"cancelListing(uint256)": {
+					"params": {
+						"tokenId": "ID del NFT a deslistar."
+					}
+				},
+				"constructor": {
+					"details": "Luego del deploy, llamar a ArtNFT.setMinter(address(this)) para autorizar      este contrato a mintear NFTs.",
+					"params": {
+						"initialMintPrice": "Precio en wei para mintear un nuevo NFT (0 = gratis).",
+						"nftAddress": "Dirección del contrato ArtNFT previamente deployado."
+					}
+				},
+				"createNFT(string)": {
+					"details": "INTERACCIÓN CROSS-CONTRACT: llama a ArtNFT.mint(). Patrón CEI:      1. CHECK: msg.value >= mintPrice      2. EFFECT: acumular fee      3. INTERACTION: llamar a ArtNFT.mint()",
+					"params": {
+						"uri": "URI de metadata IPFS del nuevo NFT (formato: ipfs://CID/metadata.json)."
+					},
+					"returns": {
+						"tokenId": "El ID del token recién minteado."
+					}
+				},
+				"getListing(uint256)": {
+					"params": {
+						"tokenId": "ID del token a consultar."
+					},
+					"returns": {
+						"active": "Si el listing está activo.",
+						"price": "Precio de venta en wei.",
+						"seller": "Dirección del vendedor."
+					}
+				},
+				"listNFT(uint256,uint256)": {
+					"details": "El caller debe llamar a ArtNFT.approve(marketplace, tokenId) primero.",
+					"params": {
+						"price": "Precio de venta en wei. Debe ser mayor a cero.",
+						"tokenId": "ID del NFT a listar."
+					}
+				},
+				"owner()": {
+					"details": "Returns the address of the current owner."
+				},
+				"renounceOwnership()": {
+					"details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner."
+				},
+				"setMintPrice(uint256)": {
+					"details": "Solo el owner puede llamarlo.",
+					"params": {
+						"newPrice": "Nuevo precio en wei (0 para minteo gratuito)."
+					}
+				},
+				"transferOwnership(address)": {
+					"details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+				},
+				"withdrawFees()": {
+					"details": "Patrón CEI: saldo puesto a cero ANTES de transferir ETH."
+				}
+			},
+			"title": "ArtMarketplace",
+			"version": 1
+		},
+		"userdoc": {
+			"errors": {
+				"InsufficientPayment(uint256,uint256)": [
+					{
+						"notice": "El ETH enviado no alcanza el precio del listing."
+					}
+				],
+				"ListingNotActive(uint256)": [
+					{
+						"notice": "El tokenId no tiene un listing activo en este momento."
+					}
+				],
+				"MarketplaceNotApproved(uint256)": [
+					{
+						"notice": "El marketplace no tiene aprobación para transferir el token."
+					}
+				],
+				"MintPriceNotMet(uint256,uint256)": [
+					{
+						"notice": "El ETH enviado no alcanza el mintPrice requerido."
+					}
+				],
+				"NoFeesToWithdraw()": [
+					{
+						"notice": "No hay fees acumuladas disponibles para retirar."
+					}
+				],
+				"NotTokenOwner()": [
+					{
+						"notice": "El caller no es el dueño del token."
+					}
+				],
+				"PriceMustBeGreaterThanZero()": [
+					{
+						"notice": "El precio de listado debe ser mayor a cero."
+					}
+				],
+				"TransferFailed()": [
+					{
+						"notice": "La transferencia de ETH falló."
+					}
+				]
+			},
+			"events": {
+				"FeesWithdrawn(address,uint256)": {
+					"notice": "Emitido cuando el owner retira las fees acumuladas."
+				},
+				"ListingCancelled(uint256,address)": {
+					"notice": "Emitido cuando se cancela un listing activo."
+				},
+				"MintPriceUpdated(uint256,uint256)": {
+					"notice": "Emitido cuando el owner actualiza el precio de minteo."
+				},
+				"NFTCreated(address,uint256,string)": {
+					"notice": "Emitido cuando se mintea un nuevo NFT a través del marketplace."
+				},
+				"NFTListed(uint256,address,uint256)": {
+					"notice": "Emitido cuando un NFT es puesto a la venta."
+				},
+				"NFTSold(uint256,address,address,uint256)": {
+					"notice": "Emitido cuando se concreta la compra de un NFT."
+				}
+			},
+			"kind": "user",
+			"methods": {
+				"FEE_BASIS_POINTS()": {
+					"notice": "Fee del marketplace en basis points (250 = 2.5%)."
+				},
+				"accumulatedFees()": {
+					"notice": "ETH acumulado por fees del marketplace, retirable por el owner."
+				},
+				"buyNFT(uint256)": {
+					"notice": "Compra un NFT listado. El comprador envía al menos el precio del listing."
+				},
+				"calculateFee(uint256)": {
+					"notice": "Calcula el fee del marketplace para un precio de venta dado."
+				},
+				"cancelListing(uint256)": {
+					"notice": "Cancela el listing activo de un NFT propio."
+				},
+				"constructor": {
+					"notice": "Deploya el marketplace y lo conecta al contrato ArtNFT."
+				},
+				"createNFT(string)": {
+					"notice": "Crea y mintea un nuevo NFT pagando el mintPrice."
+				},
+				"getListing(uint256)": {
+					"notice": "Devuelve los detalles del listing de un token."
+				},
+				"listNFT(uint256,uint256)": {
+					"notice": "Pone un NFT propio a la venta al precio indicado."
+				},
+				"listings(uint256)": {
+					"notice": "Mapeo de tokenId a los datos de su listing."
+				},
+				"mintPrice()": {
+					"notice": "Precio en wei requerido para mintear un nuevo NFT."
+				},
+				"nftContract()": {
+					"notice": "Referencia inmutable al contrato ArtNFT asociado."
+				},
+				"setMintPrice(uint256)": {
+					"notice": "Actualiza el precio de minteo para nuevos NFTs."
+				},
+				"withdrawFees()": {
+					"notice": "Retira todas las fees acumuladas del marketplace al owner."
+				}
+			},
+			"notice": "Marketplace para mintear y comerciar ArtChain NFTs.         Permite a los creadores acuñar NFTs pagando una tarifa de minteo,         listarlos a la venta y que los compradores los adquieran con ETH.         El marketplace retiene un 2.5% de cada venta como comisión.",
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/ArtMarketplace.sol": "ArtMarketplace"
+		},
+		"evmVersion": "osaka",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"@openzeppelin/contracts/access/Ownable.sol": {
+			"keccak256": "0xff6d0bb2e285473e5311d9d3caacb525ae3538a80758c10649a4d61029b017bb",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://8ed324d3920bb545059d66ab97d43e43ee85fd3bd52e03e401f020afb0b120f6",
+				"dweb:/ipfs/QmfEckWLmZkDDcoWrkEvMWhms66xwTLff9DDhegYpvHo1a"
+			]
+		},
+		"@openzeppelin/contracts/interfaces/IERC165.sol": {
+			"keccak256": "0x0afcb7e740d1537b252cb2676f600465ce6938398569f09ba1b9ca240dde2dfc",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://1c299900ac4ec268d4570ecef0d697a3013cd11a6eb74e295ee3fbc945056037",
+				"dweb:/ipfs/Qmab9owJoxcA7vJT5XNayCMaUR1qxqj1NDzzisduwaJMcZ"
+			]
+		},
+		"@openzeppelin/contracts/interfaces/IERC4906.sol": {
+			"keccak256": "0x856ca1885aec23d54da3f2760b5d216d1b28ad20f798000336375a30dbbc1558",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://dc725c462ccbf284432d3123ab8c9bab24903730cae227ae4945878039d2fe54",
+				"dweb:/ipfs/QmdiEVMvm8njp96dm2s4mThYBD74tY59mNP6s7CzKkGHAh"
+			]
+		},
+		"@openzeppelin/contracts/interfaces/IERC721.sol": {
+			"keccak256": "0xca34c490d41c332106d30b657f00dc028532cb6b9fef2b1729670ce476b36bce",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://ef5e7685d50ed8aae2104a7eb2c31ae5a3b508f24fadfa7611f92f819201aee9",
+				"dweb:/ipfs/QmYbTD32FPrEfP1hkniQmRxVUWp8GTSqFV1Bhwx1HVirse"
+			]
+		},
+		"@openzeppelin/contracts/interfaces/draft-IERC6093.sol": {
+			"keccak256": "0x1b88b3fb3d85ba5496d7d5f396f83ee1fddcdd6762059ff65992655b67920998",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://89393bb3212da1c0889601b9706a07b39419ddc4d2faab9eaf6e7f9152cf6a1c",
+				"dweb:/ipfs/QmcCfzzxv1Bkdz1c1yF4gQCeYb6Us5BJANnzTFqawfd1HL"
+			]
+		},
+		"@openzeppelin/contracts/token/ERC721/ERC721.sol": {
+			"keccak256": "0xf6bb0dc431a9c50e25756412ec14cfcd4dc61dd40b8dc0e1b58ec09fce6d5564",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://eb87fef7e8ed754b8600cd5d42e4f23128059006368ffd19e4d50cc166471ee5",
+				"dweb:/ipfs/Qmc1vy1cevKreGUsG7S79gyhNvDtPnNz9qG47eYVHmMKLs"
+			]
+		},
+		"@openzeppelin/contracts/token/ERC721/IERC721.sol": {
+			"keccak256": "0xf78f05f3b8c9f75570e85300d7b4600d7f6f6a198449273f31d44c1641adb46f",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://e28b872613b45e0e801d4995aa4380be2531147bfe2d85c1d6275f1de514fba3",
+				"dweb:/ipfs/QmeeFcfShHYaS3BdgVj78nxR28ZaVUwbvr66ud8bT6kzw9"
+			]
+		},
+		"@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol": {
+			"keccak256": "0x88cd5e3bee2e8c36b8d9058fbcaa81ad5704281b25634122234b55ea853d8055",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://8dc7e7ab5b8ea36c15027ab04221b05d1c970f47a53e9fd47ead8ca665d49c7e",
+				"dweb:/ipfs/Qmeeph7fsDyfRr8vb2L8KcDEmKPb224TAayMvgqgGAnqpL"
+			]
+		},
+		"@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol": {
+			"keccak256": "0x89f7ab7c5a5f90b120fb0f168f89128eec5306ecef9863536dc62dbc076952d4",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://d6402d8daa6987e6ecb42014fbb3b35b4b9c38530f0b9ab473074a9d846e0639",
+				"dweb:/ipfs/QmYFuYZGFP9B9qqg8sr8mGT5yn4hC4WNsjHfJBfLQ8UQfQ"
+			]
+		},
+		"@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol": {
+			"keccak256": "0xf46268c37522320bb2119a5a394bc5c739a95c0c574c8d08e8c643f4d06e5c76",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://517e4b295f35b9947c72ad7379a6089439ece7bb6f4a2ea0a159da13046c039e",
+				"dweb:/ipfs/QmZXzkSfLUbvujig3zVbpDHykpHhqLpvQtdiN3B5j4TA3u"
+			]
+		},
+		"@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol": {
+			"keccak256": "0xc7efbc23214ad7dced8bf2249460f4bda114d57f6a0079f84040654280f455bd",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://1f5bd44efca8c8c0d74439e7b808d1f9c4af1df78f91fef8e8bbca8104645435",
+				"dweb:/ipfs/Qmb42XSd8MKsEitp42sZkSFGqDRigk6QgGXtiJyJqUZJJ6"
+			]
+		},
+		"@openzeppelin/contracts/utils/Bytes.sol": {
+			"keccak256": "0xf80e4b96b6849936ea0fabd76cf81b13d7276295fddb1e1c07afb3ddf650b0ac",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://6430007255ac11c6e9c4331a418f3af52ff66fbbae959f645301d025b20aeb08",
+				"dweb:/ipfs/QmQE5fjmBBRw9ndnzJuC2uskYss1gbaR7JdazoCf1FGoBj"
+			]
+		},
+		"@openzeppelin/contracts/utils/Context.sol": {
+			"keccak256": "0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://6a708e8a5bdb1011c2c381c9a5cfd8a9a956d7d0a9dc1bd8bcdaf52f76ef2f12",
+				"dweb:/ipfs/Qmax9WHBnVsZP46ZxEMNRQpLQnrdE4dK8LehML1Py8FowF"
+			]
+		},
+		"@openzeppelin/contracts/utils/Panic.sol": {
+			"keccak256": "0xf7fe324703a64fc51702311dc51562d5cb1497734f074e4f483bfb6717572d7a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://c6a5ff4f9fd8649b7ee20800b7fa387d3465bd77cf20c2d1068cd5c98e1ed57a",
+				"dweb:/ipfs/QmVSaVJf9FXFhdYEYeCEfjMVHrxDh5qL4CGkxdMWpQCrqG"
+			]
+		},
+		"@openzeppelin/contracts/utils/ReentrancyGuard.sol": {
+			"keccak256": "0xa516cbf1c7d15d3517c2d668601ce016c54395bf5171918a14e2686977465f53",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://1e1d079e8edfb58efd23a311e315a4807b01b5d1cf153f8fa2d0608b9dec3e99",
+				"dweb:/ipfs/QmTBExeX2SDTkn5xbk5ssbYSx7VqRp9H4Ux1CY4uQM4b9N"
+			]
+		},
+		"@openzeppelin/contracts/utils/StorageSlot.sol": {
+			"keccak256": "0xcf74f855663ce2ae00ed8352666b7935f6cddea2932fdf2c3ecd30a9b1cd0e97",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://9f660b1f351b757dfe01438e59888f31f33ded3afcf5cb5b0d9bf9aa6f320a8b",
+				"dweb:/ipfs/QmarDJ5hZEgBtCmmrVzEZWjub9769eD686jmzb2XpSU1cM"
+			]
+		},
+		"@openzeppelin/contracts/utils/Strings.sol": {
+			"keccak256": "0x1fdc2de9585ab0f1c417f02a873a2b6343cd64bb7ffec6b00ffa11a4a158d9e8",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://1ab223a3d969c6cd7610049431dd42740960c477e45878f5d8b54411f7a32bdc",
+				"dweb:/ipfs/QmWumhjvhpKcwx3vDPQninsNVTc3BGvqaihkQakFkQYpaS"
+			]
+		},
+		"@openzeppelin/contracts/utils/introspection/ERC165.sol": {
+			"keccak256": "0x2d9dc2fe26180f74c11c13663647d38e259e45f95eb88f57b61d2160b0109d3e",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://81233d1f98060113d9922180bb0f14f8335856fe9f339134b09335e9f678c377",
+				"dweb:/ipfs/QmWh6R35SarhAn4z2wH8SU456jJSYL2FgucfTFgbHJJN4E"
+			]
+		},
+		"@openzeppelin/contracts/utils/introspection/IERC165.sol": {
+			"keccak256": "0x8891738ffe910f0cf2da09566928589bf5d63f4524dd734fd9cedbac3274dd5c",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://971f954442df5c2ef5b5ebf1eb245d7105d9fbacc7386ee5c796df1d45b21617",
+				"dweb:/ipfs/QmadRjHbkicwqwwh61raUEapaVEtaLMcYbQZWs9gUkgj3u"
+			]
+		},
+		"@openzeppelin/contracts/utils/math/Math.sol": {
+			"keccak256": "0x59973a93b1f983f94e10529f46ca46544a9fec2b5f56fb1390bbe9e0dc79f857",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://c55ef8f0b9719790c2ae6f81d80a59ffb89f2f0abe6bc065585bd79edce058c5",
+				"dweb:/ipfs/QmNNmCbX9NjPXKqHJN8R1WC2rNeZSQrPZLd6FF6AKLyH5Y"
+			]
+		},
+		"@openzeppelin/contracts/utils/math/SafeCast.sol": {
+			"keccak256": "0xc8cae21c9ae4a46e5162ff9bf5b351d6fa6a6eba72d515f3bc1bdfeda7fdf083",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://ce830ebcf28e31643caba318996db3763c36d52cd0f23798ba83c135355d45e9",
+				"dweb:/ipfs/QmdGPcvptHN7UBCbUYBbRX3hiRVRFLRwno8b4uga6uFNif"
+			]
+		},
+		"@openzeppelin/contracts/utils/math/SignedMath.sol": {
+			"keccak256": "0xb1970fac7b64e6c09611e6691791e848d5e3fe410fa5899e7df2e0afd77a99e3",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://db5fbb3dddd8b7047465b62575d96231ba8a2774d37fb4737fbf23340fabbb03",
+				"dweb:/ipfs/QmVUSvooZKEdEdap619tcJjTLcAuH6QBdZqAzWwnAXZAWJ"
+			]
+		},
+		"contracts/ArtMarketplace.sol": {
+			"keccak256": "0x8a53847616df4ee0775f95f0dcbaecc777970d02d23f323ba332b247f1a988be",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://465e4e18808a7ba0a1fda48ee8da81e5b2ed5f79b9d0df8bfb887cf98c1ab0fa",
+				"dweb:/ipfs/QmYXbm3fLU33pVj1k4HSPchjae1bgM99CN2Rk6ZygzAGos"
+			]
+		},
+		"contracts/ArtNFT.sol": {
+			"keccak256": "0x672bacd9abea846cbcc71f553165c01db664480da6b61321b2f4b16bf58904e1",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://1282237c08d843407e0b60c50d1bc213d40214352a83788362d172af4b7b353e",
+				"dweb:/ipfs/QmXqhe5EqTZjCFGG6CNTfNcvrW37R4J49w7Ckz3ZXffqNV"
+			]
+		}
+	},
+	"version": 1
+}
